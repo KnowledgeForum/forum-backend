@@ -4,10 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
-//@Setter
 @Entity
 @Table(name = "tag")
 public class Tag {
@@ -20,9 +19,9 @@ public class Tag {
     private String tagName;
 
     @Column(name = "tag_count", nullable = false, columnDefinition = "INT UNSIGNED DEFAULT 0")
-    private Integer tagCount; //인증코드
+    private Long tagCount;
 
     @CreationTimestamp
     @Column(name = "created_time", nullable = false, columnDefinition = "DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp createTime; //유효시간 => 5분 이내로 계산
+    private LocalDateTime createTime; //유효시간 => 5분 이내로 계산
 }

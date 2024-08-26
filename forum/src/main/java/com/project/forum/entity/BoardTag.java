@@ -6,10 +6,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
-//@Setter
 @Entity
 @Table(name = "board_tag")
 public class BoardTag {
@@ -29,6 +28,6 @@ public class BoardTag {
     private Tag tag; //=> ON UPDATE CASCADE 이 옵션은 mysql에서 직접 설정하기
 
     @CreationTimestamp
-    @Column(name = "created_time", nullable = false)
-    private Timestamp createdTime; //생성된 시간
+    @Column(name = "created_time", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime createdTime; //생성된 시간
 }
