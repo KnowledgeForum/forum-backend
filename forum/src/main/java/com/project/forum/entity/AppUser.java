@@ -1,6 +1,7 @@
 package com.project.forum.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,6 +10,7 @@ import java.sql.Timestamp;
 
 @Getter
 //@Setter
+@Builder
 @Entity
 @Table(name = "app_user")
 public class AppUser {
