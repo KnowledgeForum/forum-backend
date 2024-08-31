@@ -6,10 +6,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
-//@Setter
 @Entity
 @Table(name = "interest_tag")
 public class InterestTag {
@@ -20,15 +19,15 @@ public class InterestTag {
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "tag_id", referencedColumnName = "tag_id", nullable = false, columnDefinition = "INT UNSIGNED")
-    private Tag tag; //ON UPDATE CASCADE 설정 해줘야함
+    @JoinColumn(name = "tag_id", nullable = false, columnDefinition = "INT UNSIGNED")
+    private Tag tag;
 
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false, columnDefinition = "INT UNSIGNED")
-    private AppUser appUser; //ON UPDATE CASCADE 설정 해줘야함
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id",nullable = false, columnDefinition = "INT UNSIGNED")
+    private AppUser appUser;
 
     @CreationTimestamp
-    @Column(name = "created_time", nullable = false)
-    private Timestamp createdTime; //생성된 시간
+    @Column(name = "created_time", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private LocalDateTime createdTime; //생성된 시간
 }
