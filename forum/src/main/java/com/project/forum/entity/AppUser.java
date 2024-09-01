@@ -1,11 +1,13 @@
 package com.project.forum.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+@Builder
 @Getter
 @Entity
 @Table(name = "app_user")
