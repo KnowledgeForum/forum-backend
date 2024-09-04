@@ -21,7 +21,7 @@ public class EmailVerify {
     @JoinColumn(name = "user_id", nullable = false, unique = true, columnDefinition = "INT UNSIGNED")
     private AppUser appUser;
 
-    @Column(name = "email", nullable = false, unique = true, columnDefinition = "VARCHAR",length = 60)
+    @Column(name = "email", nullable = false, unique = true, length = 60)
     private String email; // 이메일
 
     @Column(name = "verify_code", nullable = false, columnDefinition = "CHAR", length = 6)

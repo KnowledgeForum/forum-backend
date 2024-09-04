@@ -3,7 +3,9 @@ package com.project.forum.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -11,8 +13,10 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Entity
 @Table(name = "board_view")
+@DynamicInsert
 public class BoardView {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

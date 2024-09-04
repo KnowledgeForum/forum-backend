@@ -2,15 +2,19 @@ package com.project.forum.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Entity
 @Table(name = "board")
+@DynamicInsert
 public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,6 +38,12 @@ public class Board {
 
     @Column(name = "thumbnail_path", length = 100)
     private String thumbnailPath; //썸네일
+
+    @Column(name = "thumbnail_type", length = 20)
+    private String thumbnailType;
+
+    @Column(name = "thumbnail_size", columnDefinition = "INT UNSIGNED")
+    private Long thumbnailSize;
 
     @Column(name = "like_count", nullable = false, columnDefinition = "INT UNSIGNED DEFAULT 0")
     private Integer likeCount;

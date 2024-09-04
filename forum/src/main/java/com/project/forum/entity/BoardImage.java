@@ -3,15 +3,19 @@ package com.project.forum.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Entity
 @Table(name = "board_image")
+@DynamicInsert
 public class BoardImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,10 +30,10 @@ public class BoardImage {
     @Column(name = "image_size", nullable = false, columnDefinition = "INT UNSIGNED")
     private Long imageSize;
 
-    @Column(name = "image_type", nullable = false, columnDefinition = "VARCHAR", length = 20)
+    @Column(name = "image_type", nullable = false, length = 20)
     private String imageType;
 
-    @Column(name = "image_path", nullable = false, columnDefinition = "VARCHAR", length = 200)
+    @Column(name = "image_path", nullable = false, length = 200)
     private String imagePath;
 
     @CreationTimestamp
