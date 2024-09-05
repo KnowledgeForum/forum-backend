@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
+
     EXPIRED_VERIFIED_EMAIL(HttpStatus.BAD_REQUEST, "인증 시간이 만료된 이메일입니다.", "B40001"),
     NOT_MATCHED_VERIFIED_CODE(HttpStatus.BAD_REQUEST, "인증 번호가 일치하지 않습니다.", "B40002"),
     BROKEN_IMAGE(HttpStatus.BAD_REQUEST, "이메일이 깨져있거나 존재하지 않습니다.", "B40003"),
@@ -26,6 +27,7 @@ public enum ErrorCode {
 
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "사용자가 존재하지 않습니다.", "N40401"),
     NOT_FOUND_VERIFIED_EMAIL(HttpStatus.NOT_FOUND, "인증을 요청한 이메일이 존재하지 않습니다.", "N40402"),
+    FOUND_VERIFIED_EMAIL(HttpStatus.NOT_FOUND, "인증을 요청한 이메일 이미 존재합니다.", "N40402"),
     NOT_FOUND_BOARD(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다.", "N40403"),
     NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "댓글이 존재하지 않습니다.", "N40404"),
 
@@ -36,7 +38,8 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 서버 에러가 발생하였습니다.", "I50000"),
     ERROR_EMAIL_SENDER(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송 오류가 발생하였습니다.", "I50001"),
     ERROR_FILE_UPLOAD(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드 오류가 발생하였습니다.", "I50002"),
-    ERROR_REDIS(HttpStatus.INTERNAL_SERVER_ERROR, "Redis 오류가 발생하였습니다.", "I50003");
+    ERROR_REDIS(HttpStatus.INTERNAL_SERVER_ERROR, "Redis 오류가 발생하였습니다.", "I50003"),
+    AUTH_CODE_IS_NOT_SAME(HttpStatus.INTERNAL_SERVER_ERROR, "인증 번호가 일치하지 않습니다.", "I50004");
 
     private final HttpStatus status;
     private final String message;

@@ -17,11 +17,12 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
 
+    // 이메일 발송 메서드
     public void sendEmail(String toEmail, String title, String text) {
-        SimpleMailMessage message = createEmailForm(toEmail, title, text);
+        SimpleMailMessage emailForm = createEmailForm(toEmail, title, text);
 
         try {
-            javaMailSender.send(message);
+            javaMailSender.send(emailForm );
         } catch (RuntimeException e) {
             log.debug("EmailService.sendEmail exception occur toEmail : {}, title: {}, text : {}", toEmail, title, text);
             throw new CustomException(ErrorCode.ERROR_EMAIL_SENDER);
@@ -29,7 +30,7 @@ public class EmailService {
 
     }
 
-    // 발신 이메일 데이터 세팅
+    // 발신할 이메일 데이터 세팅
     private SimpleMailMessage createEmailForm(String toEmail, String title, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);

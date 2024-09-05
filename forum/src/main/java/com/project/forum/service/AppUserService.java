@@ -32,7 +32,7 @@ public class AppUserService {
 
     private final EmailService emailService;
 
-//    private final RedisService redisService;
+    private final RedisService redisService;
 
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
@@ -62,6 +62,7 @@ public class AppUserService {
         return savedUser != null;
     }
 
+    // 이메일 인증 코드 관련
     public void sendCodeToEmail(String toEmail) {
         this.checkDuplicatedEmail(toEmail);
         String title = "Forum 이메일 인증 번호";
@@ -69,16 +70,17 @@ public class AppUserService {
 
         emailService.sendEmail(toEmail, title, authCode);
 
-        // 이메일 인증 요청 시 인증 번호 Resid에 저장 (key="AuthCode "+Email / value=AuthCode)
-//        redisService.setValues(AUTH_PREFIX + toEmail, authCode, Duration.ofMillis(this.authCodeExpirationMillis));
+        // 이메일 인증 요청 시 인증 번호 Resid에 저장 (key="AuthCode " + Email / value=AuthCode)
+        redisService.setValues(AUTH_CODE_PREFIX + toEmail, authCode, Duration.ofMillis(this.authCodeExpirationMillis));
     }
 
+    // 이메일 인증 코드 관련
     private void checkDuplicatedEmail(String email) {
         Optional<AppUser> appUser = appUserRepository.findByEmail(email);
-
+        System.out.println("checkDuplicatedEmail : "+appUser.toString()); // 없어야함
         if (appUser.isPresent()) {
             log.debug("AppUserServiceImpl.checkDuplicatedEmail exception occur email : {}", email);
-            throw new CustomException(ErrorCode.NOT_FOUND_VERIFIED_EMAIL);
+            throw new CustomException(ErrorCode.FOUND_VERIFIED_EMAIL);
         }
     }
 
@@ -94,10 +96,15 @@ public class AppUserService {
         return sb.toString();
     }
 
-//    public String verifiedCode(String email, String authCode) {
-//        this.checkDuplicatedEmail(email);
-//        String redisAuthCode = redisService.checkExistsValue(redisAuthCode) && redisAuthCode.equals(authCode);
-//
-//    }
+    public void verifiedCode(String email, String authCode) {
+        this.checkDuplicatedEmail(email);
+
+        String redisAuthCode = redisService.getValues(AUTH_CODE_PREFIX + email);
+        boolean authResult = redisService.checkExistsValue(redisAuthCode) && redisAuthCode.equals(authCode);
+
+        if (!authResult) {
+            throw new CustomException(ErrorCode.AUTH_CODE_IS_NOT_SAME);
+        }
+    }
 
 }

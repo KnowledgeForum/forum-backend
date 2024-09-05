@@ -1,8 +1,7 @@
 package com.project.forum.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -11,6 +10,9 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @Table(name = "app_user")
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

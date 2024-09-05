@@ -42,7 +42,7 @@ public class AppUserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping(value = "/user")
+    @PostMapping(value = "/")
     public ResponseEntity<?> saveUser(@Valid @RequestBody JoinAppUserDto joinAppUserDto) {
         // TODO: 1. 회원가입시 사용자가 입력한 데이터 유효성 체크
         // TODO: 2. 이메일 인증코드 발송 후 확인
@@ -53,15 +53,15 @@ public class AppUserController {
 
     }
 
-    // 인증코드 전송
-    @PostMapping(value = "/user/verify")
+    // 이메일 인증코드 전송
+    @PostMapping(value = "/verify")
     public ResponseEntity<?> sendMessage(@RequestParam("email") @Valid String email) {
         appUserService.sendCodeToEmail(email);
         return ResponseEntity.noContent().build();
     }
 
-    // 인증코드 확인
-    @GetMapping(value = "/user/verify/compare")
+    // 이메일 인증코드 확인
+    @GetMapping(value = "/verify/compare")
     public ResponseEntity<?> verificationEmail(@RequestParam("email") @Valid String email,
                                                @RequestParam("verifyCode") @Valid String verifyCode){
         appUserService.verifiedCode(email, verifyCode);
