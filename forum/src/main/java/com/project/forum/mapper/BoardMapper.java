@@ -2,13 +2,16 @@ package com.project.forum.mapper;
 
 import com.project.forum.dto.FileDto;
 import com.project.forum.dto.board.BoardDto;
+import com.project.forum.dto.tag.TagDto;
 import com.project.forum.entity.AppUser;
 import com.project.forum.entity.Board;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(uses = CustomTimestampTranslator.class)
+import java.util.List;
+
+@Mapper(uses = CustomTimestampMapper.class)
 public interface BoardMapper {
     BoardMapper INSTANCE = Mappers.getMapper(BoardMapper.class);
 
@@ -20,4 +23,16 @@ public interface BoardMapper {
     @Mapping(source = "file.extension", target = "thumbnailType")
     @Mapping(source = "file.size", target = "thumbnailSize")
     Board toEntity(AppUser user, BoardDto.Request request, FileDto file);
+
+    @Mapping(source = "board.boardId", target = "boardId")
+    @Mapping(source = "board.thumbnailPath", target = "thumbnail")
+    @Mapping(source = "board.title", target = "title")
+    @Mapping(source = "tags", target = "tags")
+    @Mapping(source = "board.isLike", target = "isLike")
+    @Mapping(source = "board.uploader", target = "uploader")
+    @Mapping(source = "board.viewCount", target = "viewCount")
+    @Mapping(source = "board.likeCount", target = "likeCount")
+    @Mapping(source = "board.commentCount", target = "commentCount")
+    @Mapping(source = "board.createdTime", target = "createdTime", qualifiedBy = { MapCreatedTime.class, CustomTimestampTranslator.class })
+    BoardDto.Response.Boards.Board toBoardsInBoard(Board board, List<TagDto.Response.Tag> tags);
 }

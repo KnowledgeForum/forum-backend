@@ -2,18 +2,23 @@ package com.project.forum.service;
 
 import com.project.forum.dto.FileDto;
 import com.project.forum.dto.board.BoardDto;
+import com.project.forum.dto.tag.TagDto;
 import com.project.forum.entity.*;
 import com.project.forum.exception.CustomException;
 import com.project.forum.exception.ErrorCode;
 import com.project.forum.mapper.BoardImageMapper;
 import com.project.forum.mapper.BoardMapper;
 import com.project.forum.mapper.BoardTagMapper;
+import com.project.forum.mapper.TagMapper;
 import com.project.forum.repository.*;
 
+import com.project.forum.type.SortBoardTypeEnum;
 import com.project.forum.util.FileStore;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,6 +36,46 @@ public class BoardService {
     private final FileStore fileStore;
 
     private final String storePath = "board/";
+
+    private BoardDto.Response.Boards createBoardsDto(Page<Board> boards) {
+        List<BoardDto.Response.Boards.Board> mappingBoards = boards.getContent().stream().map(board -> {
+            List<BoardTag> boardTags = boardTagRepository.findAllByBoard(board);
+            List<Tag> tags = boardTags.stream().map(BoardTag::getTag).toList();
+            List<TagDto.Response.Tag> responseTags = tags.stream().map(TagMapper.INSTANCE::toTagWithoutCount).toList();
+
+            return BoardMapper.INSTANCE.toBoardsInBoard(board, responseTags);
+        }).toList();
+
+        return new BoardDto.Response.Boards(mappingBoards, boards.getTotalElements());
+    }
+
+    public BoardDto.Response.Boards getRecentPosts(final int page, final int count, final SortBoardTypeEnum type) {
+        Pageable pageable = Pageable.ofSize(count).withPage(page - 1);
+        Page<Board> boards = null;
+
+        if (type == SortBoardTypeEnum.ALL) {
+            boards = boardRepository.findAllByOrderByCreatedTimeDesc(pageable);
+        } else {
+            boards = boardRepository.findAllByCategoryOrderByCreatedTimeDesc(pageable, type.getType());
+        }
+
+        if (boards.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_BOARD);
+        }
+
+        return createBoardsDto(boards);
+    }
+
+    public BoardDto.Response.Boards getSearchPosts(final int page, final int count, final String keyword) {
+        Pageable pageable = Pageable.ofSize(count).withPage(page - 1);
+        Page<Board> boards = boardRepository.findALlByTitleContainingOrderByCreatedTimeDesc(pageable, keyword);
+
+        if (boards.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_BOARD);
+        }
+
+        return createBoardsDto(boards);
+    }
 
     @Transactional
     public Long create(final Long userId, final BoardDto.Request request) {

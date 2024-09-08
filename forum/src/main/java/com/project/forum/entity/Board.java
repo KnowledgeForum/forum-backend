@@ -1,12 +1,11 @@
 package com.project.forum.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import org.aspectj.lang.annotation.After;
+import org.hibernate.annotations.*;
 
 import java.time.LocalDateTime;
 
@@ -61,4 +60,14 @@ public class Board {
     @CreationTimestamp
     @Column(name = "updated_time", nullable = false, columnDefinition = "CURRENT_TIMESTAMP")
     private LocalDateTime updatedTime; //업데이트 시간
+
+    @Formula(value = "(SELECT " +
+                            "CASE WHEN EXISTS " +
+                                "(" +
+                                    "SELECT 1 FROM board_like bl " +
+                                        "WHERE bl.board_id = board_id AND bl.user_id = uploader_id" +
+                                ") " +
+                            "THEN true ELSE false " +
+                            "END)")
+    private Boolean isLike;
 }

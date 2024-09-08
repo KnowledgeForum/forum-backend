@@ -27,5 +27,5 @@ public class Tag {
 
     @CreationTimestamp
     @Column(name = "created_time", nullable = false, columnDefinition = "DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createTime; //유효시간 => 5분 이내로 계산
+    private LocalDateTime createTime;
 }
