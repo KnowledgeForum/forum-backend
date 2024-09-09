@@ -97,7 +97,7 @@ public class BoardService {
 
         Board createdBoard = boardRepository.save(board);
 
-        List<Tag> tags = tagRepository.findAllById(request.getTagIds());
+        List<Tag> tags = tagRepository.findAllByTagIdIn(request.getTagIds());
         if (tags.size() != request.getTagIds().size() || tags.isEmpty() || tags.size() > 3) {
             throw new CustomException(ErrorCode.BAD_REQUEST_TAG);
         }

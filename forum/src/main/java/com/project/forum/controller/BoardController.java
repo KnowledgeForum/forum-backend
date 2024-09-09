@@ -2,7 +2,6 @@ package com.project.forum.controller;
 
 import com.project.forum.dto.board.BoardDto;
 import com.project.forum.service.BoardService;
-import com.project.forum.type.BoardTypeEnum;
 import com.project.forum.type.SortBoardTypeEnum;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +53,6 @@ public class BoardController {
     @PostMapping(value = "/board", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createBoard(@Valid @ModelAttribute final BoardDto.Request request) {
         Long boardId = boardService.create(1L, request);
-
         return ResponseEntity.created(URI.create("/" + boardId)).build();
     }
 }
