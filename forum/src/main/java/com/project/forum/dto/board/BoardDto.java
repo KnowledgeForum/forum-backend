@@ -12,29 +12,39 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.beans.ConstructorProperties;
 import java.util.List;
 
 public class BoardDto {
     @Getter
-    @AllArgsConstructor
     public static class Request {
         @EnumValue(enumClass = BoardTypeEnum.class, message = "게시판 유형은 뉴스 또는 게시판이어야 합니다.", ignoreCase = true)
-        private String boardType;
+        private final String boardType;
 
         @NotBlank(message = "제목을 입력해주세요.")
         @Size(max = 20, message = "제목은 20자 이하여야 합니다.")
-        private String title;
+        private final String title;
 
         @NotBlank(message = "내용을 입력해주세요.")
-        private String content;
+        private final String content;
 
         @NotNull(message = "태그를 1 ~ 3개 선택해주세요.")
         @Size(min = 1, max = 3, message = "태그를 1 ~ 3개 선택해주세요.")
-        private List<Long> tagIds;
+        private final List<Long> tagIds;
 
-        private MultipartFile thumbnail;
-        private List<Long> imageIds;
+        private final MultipartFile thumbnail;
+        private final List<Long> imageIds;
+
+        // Test Code And Formdata에서 Dto를 자동 매핑하지 못해서 다음과 같은 코드로 변경
+        @ConstructorProperties({"boardType", "title", "content", "tagIds", "thumbnail", "imageIds"})
+        public Request(String boardType, String title, String content, List<Long> tagIds, MultipartFile thumbnail, List<Long> imageIds) {
+            this.boardType = boardType;
+            this.title = title;
+            this.content = content;
+            this.tagIds = tagIds;
+            this.thumbnail = thumbnail;
+            this.imageIds = imageIds;
+        }
     }
 
     public static class Response {
