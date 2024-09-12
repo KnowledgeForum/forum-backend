@@ -2,7 +2,9 @@
 package com.project.forum.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "dummy_image")
 @DynamicInsert
@@ -33,4 +36,10 @@ public class DummyImage { // 진짜 게시글을 올릴 시 boardImage에 bummyI
     @Column(name = "created_time", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdTime; //생성된 시간
 
+    @Builder
+    public DummyImage(Long imageSize, String imageType, String imagePath) {
+        this.imageSize = imageSize;
+        this.imageType = imageType;
+        this.imagePath = imagePath;
+    }
 }

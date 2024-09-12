@@ -66,4 +66,29 @@ public class FirebaseStorageTest {
         Mockito.when(multipartFile.isEmpty()).thenReturn(true);
         Assertions.assertThrows(CustomException.class, () -> firestore.storeFile("testDirectory/", multipartFile));
     }
+
+    @Test
+    @DisplayName("파일 삭제 성공")
+    void deleteFile() {
+        String fileName = "test.jpg";
+        String filePath = "testDirectory/" + fileName;
+
+        Mockito.when(bucket.get(filePath)).thenReturn(blob);
+        Mockito.when(blob.exists()).thenReturn(true);
+
+        Assertions.assertNotEquals(null, blob);
+        firestore.deleteFile(filePath);
+
+        Mockito.verify(blob, Mockito.times(1)).delete();
+    }
+
+    @Test
+    @DisplayName("파일 삭제 실패")
+    void deleteFileFailed() {
+        String fileName = "test.jpg";
+        String filePath = "testDirectory/" + fileName;
+
+        Mockito.when(bucket.get(filePath)).thenReturn(null);
+        Assertions.assertThrows(CustomException.class, () -> firestore.deleteFile(filePath));
+    }
 }

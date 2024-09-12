@@ -59,20 +59,12 @@ public class BoardService {
             boards = boardRepository.findAllByCategoryOrderByCreatedTimeDesc(pageable, type.getType());
         }
 
-        if (boards.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND_BOARD);
-        }
-
         return createBoardsDto(boards);
     }
 
     public BoardDto.Response.Boards getSearchPosts(final int page, final int count, final String keyword) {
         Pageable pageable = Pageable.ofSize(count).withPage(page - 1);
         Page<Board> boards = boardRepository.findALlByTitleContainingOrderByCreatedTimeDesc(pageable, keyword);
-
-        if (boards.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND_BOARD);
-        }
 
         return createBoardsDto(boards);
     }
@@ -104,6 +96,10 @@ public class BoardService {
         tags.forEach(tag -> tag.setTagCount(tag.getTagCount() + 1));
 
         List<BoardTag> boardTags = tags.stream().map(tag -> BoardTagMapper.INSTANCE.toEntity(createdBoard, tag)).toList();
+        if (boardTags.isEmpty()) {
+            throw new CustomException(ErrorCode.BAD_REQUEST_TAG);
+        }
+
         boardTagRepository.saveAll(boardTags);
 
         if (request.getImageIds() != null) {
