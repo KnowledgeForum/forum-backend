@@ -1,8 +1,14 @@
 package com.project.forum.board;
 
 import com.project.forum.controller.BoardController;
+import com.project.forum.dto.appuser.AppUserDto;
+import com.project.forum.dto.board.BoardDto;
+import com.project.forum.dto.tag.TagDto;
+import com.project.forum.exception.CustomException;
+import com.project.forum.exception.ErrorCode;
 import com.project.forum.service.BoardService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,6 +27,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
@@ -164,5 +172,71 @@ public class BoardControllerTest {
                     .param("count", "10")
                     .param("keyword", "keyword")
         ).andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("게시글 수정 가져오기 성공")
+    void getUpdatePostSuccess() throws Exception {
+        Mockito.when(boardService.getUpdatePost(1L, 1L)).thenReturn(new BoardDto.Response.Update(
+                1L,
+                "title",
+                "content",
+                "content",
+                null,
+                List.of(new TagDto.Response.Tag(1L, "tag")),
+                List.of(1L),
+                "2021-08-01 13:00:00"
+        ));
+
+        mockMvc.perform(
+                get("/board/1/update")
+        ).andExpect(status().isOk());
+
+        Mockito.verify(boardService, Mockito.times(1)).getUpdatePost(1L, 1L);
+    }
+
+    @Test
+    @DisplayName("게시글 수정 가져오기 실패 - 유효하지 않은 게시글 ID")
+    void getUpdatePostFailedWithInvalidBoardId() throws Exception {
+        mockMvc.perform(
+                get("/board/invalidBoardId/update")
+        ).andExpect(status().isBadRequest());
+
+        Mockito.verify(boardService, Mockito.times(0)).getUpdatePost(1L, 1L);
+    }
+
+    @Test
+    @DisplayName("게시글 상세 정보 가져오기 성공")
+    void getPostSuccess() throws Exception {
+        Mockito.when(boardService.getPost(1L)).thenReturn(new BoardDto.Response.Detail(
+                1L,
+                "title",
+                new AppUserDto.Response.Intro(1L, "nickname", "profile"),
+                "title",
+                "content",
+                null,
+                List.of(new TagDto.Response.Tag(1L, "tag")),
+                false,
+                0L,
+                0L,
+                0L,
+                "2021-08-01 13:00:00"
+        ));
+
+        mockMvc.perform(
+                get("/board/1")
+        ).andExpect(status().isOk());
+
+        Mockito.verify(boardService, Mockito.times(1)).getPost(1L);
+    }
+
+    @Test
+    @DisplayName("게시글 상세 정보 가져오기 실패 - 유효하지 않은 게시글 ID")
+    void getPostFailedWithInvalidBoardId() throws Exception {
+        mockMvc.perform(
+                get("/board/invalidBoardId")
+        ).andExpect(status().isBadRequest());
+
+        Mockito.verify(boardService, Mockito.times(0)).getPost(1L);
     }
 }

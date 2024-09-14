@@ -1,7 +1,9 @@
 package com.project.forum.board;
 
 import com.project.forum.dto.FileDto;
+import com.project.forum.dto.appuser.AppUserDto;
 import com.project.forum.dto.board.BoardDto;
+import com.project.forum.dto.tag.TagDto;
 import com.project.forum.entity.AppUser;
 import com.project.forum.entity.Board;
 import com.project.forum.entity.DummyImage;
@@ -302,5 +304,96 @@ public class BoardServiceTest {
         Assertions.assertNotNull(boards.getBoards());
         Assertions.assertEquals(0, boards.getBoards().size());
         Assertions.assertEquals(0L, boards.getTotal());
+    }
+
+    @Test
+    @DisplayName("게시글 수정 가져오기 성공")
+    void getUpdatePostSuccess() {
+        Mockito.when(boardRepository.findByBoardId(Mockito.anyLong()))
+                .thenReturn(Optional.of(board));
+
+        BoardDto.Response.Update update = boardService.getUpdatePost(1L, 1L);
+
+        System.out.println("Board Id: " + update.getBoardId());
+        System.out.println("Board Title: " + update.getTitle());
+        System.out.println("Board Content: " + update.getContent());
+        System.out.println("Board Thumbnail: " + update.getThumbnail());
+        System.out.println("Board Tags: " + update.getTags());
+        System.out.println("Board Images: " + update.getImageIds());
+        System.out.println("Board Created Time: " + update.getCreatedTime());
+
+        Assertions.assertNotNull(update);
+        Assertions.assertEquals(1L, update.getBoardId());
+        Assertions.assertEquals("title", update.getTitle());
+        Assertions.assertEquals("content", update.getContent());
+        Assertions.assertEquals("test.jpg", update.getThumbnail());
+        Assertions.assertEquals(0, update.getTags().size());
+        Assertions.assertEquals(0, update.getImageIds().size());
+        Assertions.assertNotNull(update.getCreatedTime());
+    }
+
+    @Test
+    @DisplayName("게시글 수정 가져오기 실패 - 게시글 없음")
+    void getUpdatePostFailedWithNotFound() {
+        Mockito.when(boardRepository.findByBoardId(Mockito.anyLong()))
+                .thenReturn(Optional.empty());
+
+        Assertions.assertThrows(CustomException.class, () -> {
+            boardService.getUpdatePost(1L, 1L);
+        });
+    }
+
+    @Test
+    @DisplayName("게시글 상세 정보 가져오기 성공")
+    void getPostDetail() {
+        board.setLikeCount(0);
+        board.setCommentCount(0);
+        board.setViewCount(0);
+        board.setIsLike(false);
+
+        Mockito.when(boardRepository.findBoardIncludeUploaderByBoardId(ArgumentMatchers.anyLong())).thenReturn(Optional.of(board));
+
+        BoardDto.Response.Detail detail = boardService.getPost(1L);
+
+        System.out.println("Board Id: " + detail.getBoardId());
+        System.out.println("Board Title: " + detail.getTitle());
+        System.out.println("Board Uploader: " + detail.getUploader());
+        System.out.println("Board Content: " + detail.getContent());
+        System.out.println("Board Thumbnail: " + detail.getThumbnail());
+        System.out.println("Board Tags: " + detail.getTags());
+        System.out.println("Board Is Like: " + detail.getIsLike());
+        System.out.println("Board Like Count: " + detail.getLikeCount());
+        System.out.println("Board Comment Count: " + detail.getCommentCount());
+        System.out.println("Board View Count: " + detail.getViewCount());
+        System.out.println("Board Created Time: " + detail.getCreatedTime());
+
+        Assertions.assertNotNull(detail);
+        Assertions.assertEquals(1L, detail.getBoardId());
+        Assertions.assertEquals("title", detail.getTitle());
+        Assertions.assertNotNull(detail.getUploader());
+        Assertions.assertEquals("appUser", detail.getUploader().getNickname());
+        Assertions.assertEquals("content", detail.getContent());
+        Assertions.assertEquals("test.jpg", detail.getThumbnail());
+        Assertions.assertEquals(0, detail.getTags().size());
+        Assertions.assertFalse(detail.getIsLike());
+        Assertions.assertEquals(0, detail.getLikeCount());
+        Assertions.assertEquals(0, detail.getCommentCount());
+        Assertions.assertEquals(0, detail.getViewCount());
+        Assertions.assertNotNull(detail.getCreatedTime());
+
+        Mockito.verify(boardRepository, Mockito.times(1)).findBoardIncludeUploaderByBoardId(ArgumentMatchers.anyLong());
+        Mockito.verify(boardTagRepository, Mockito.times(1)).findAllByBoard(ArgumentMatchers.any());
+    }
+
+    @Test
+    @DisplayName("게시글 상세 정보 가져오기 실패 - 게시글 없음")
+    void getPostDetailFailedWithNotFound() {
+        Mockito.when(boardRepository.findBoardIncludeUploaderByBoardId(ArgumentMatchers.anyLong())).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(CustomException.class, () -> {
+            boardService.getPost(1L);
+        });
+
+        Mockito.verify(boardRepository, Mockito.times(1)).findBoardIncludeUploaderByBoardId(ArgumentMatchers.anyLong());
     }
 }

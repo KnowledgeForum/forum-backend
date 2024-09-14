@@ -73,5 +73,37 @@ public class BoardDto {
             private List<Board> boards;
             private Long total;
         }
+
+        @Getter
+        @Setter
+        @AllArgsConstructor
+        public static class Update {
+            private Long boardId;
+            private String boardType;
+            private String title;
+            private String content;
+            private String thumbnail;
+            private List<TagDto.Response.Tag> tags;
+            private List<Long> imageIds;
+            private String createdTime;
+        }
+
+        @Getter
+        @Setter
+        @AllArgsConstructor
+        public static class Detail {
+            private Long boardId;
+            private String boardType;
+            private AppUserDto.Response.Intro uploader;
+            private String title;
+            private String content;
+            private String thumbnail;
+            private List<TagDto.Response.Tag> tags;
+            private Boolean isLike;
+            private Long likeCount;
+            private Long viewCount;
+            private Long commentCount;
+            private String createdTime;
+        }
     }
 }

@@ -6,10 +6,7 @@ import com.project.forum.dto.tag.TagDto;
 import com.project.forum.entity.*;
 import com.project.forum.exception.CustomException;
 import com.project.forum.exception.ErrorCode;
-import com.project.forum.mapper.BoardImageMapper;
-import com.project.forum.mapper.BoardMapper;
-import com.project.forum.mapper.BoardTagMapper;
-import com.project.forum.mapper.TagMapper;
+import com.project.forum.mapper.*;
 import com.project.forum.repository.*;
 
 import com.project.forum.type.SortBoardTypeEnum;
@@ -34,8 +31,6 @@ public class BoardService {
     private final BoardImageRepository boardImageRepository;
 
     private final FileStore fileStore;
-
-    private final String storePath = "board/";
 
     private BoardDto.Response.Boards createBoardsDto(Page<Board> boards) {
         List<BoardDto.Response.Boards.Board> mappingBoards = boards.getContent().stream().map(board -> {
@@ -69,6 +64,35 @@ public class BoardService {
         return createBoardsDto(boards);
     }
 
+    public BoardDto.Response.Detail getPost(final Long boardId) {
+        Board board = boardRepository.findBoardIncludeUploaderByBoardId(boardId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_BOARD));
+
+        List<BoardTag> boardTags = boardTagRepository.findAllByBoard(board);
+        List<Tag> tags = boardTags.stream().map(BoardTag::getTag).toList();
+        List<TagDto.Response.Tag> responseTags = tags.stream().map(TagMapper.INSTANCE::toTagWithoutCount).toList();
+
+        return BoardMapper.INSTANCE.toDetail(board, responseTags);
+    }
+
+    public BoardDto.Response.Update getUpdatePost(final Long userId, final Long boardId) {
+        Board board = boardRepository.findByBoardId(boardId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_BOARD));
+
+        if (!board.getUploader().getUserId().equals(userId)) {
+            throw new CustomException(ErrorCode.NOT_MATCHED_BOARD_UPLOADER);
+        }
+
+        List<BoardTag> boardTags = boardTagRepository.findAllByBoard(board);
+        List<Tag> tags = boardTags.stream().map(BoardTag::getTag).toList();
+        List<TagDto.Response.Tag> responseTags = tags.stream().map(TagMapper.INSTANCE::toTagWithoutCount).toList();
+
+        List<BoardImage> boardImages = boardImageRepository.findAllByBoard(board);
+        List<Long> imageIds = boardImages.stream().map(BoardImage::getImageId).toList();
+
+        return BoardMapper.INSTANCE.toUpdatePost(board, responseTags, imageIds);
+    }
+
     @Transactional
     public Long create(final Long userId, final BoardDto.Request request) {
         AppUser user = appUserRepository.findByUserId(userId)
@@ -81,7 +105,7 @@ public class BoardService {
         Board board = null;
 
         if (request.getThumbnail() != null) {
-            FileDto file = fileStore.storeFile(storePath, request.getThumbnail());
+            FileDto file = fileStore.storeFile("board/", request.getThumbnail());
             board = BoardMapper.INSTANCE.toEntity(user, request, file);
         } else {
             board = BoardMapper.INSTANCE.toEntity(user, request, null);
@@ -103,7 +127,7 @@ public class BoardService {
         boardTagRepository.saveAll(boardTags);
 
         if (request.getImageIds() != null) {
-            List<DummyImage> dummyImages = dummyImageRepository.findAllByImageIdIn(request.getImageIds());
+            List<com.project.forum.entity.DummyImage> dummyImages = dummyImageRepository.findAllByImageIdIn(request.getImageIds());
             if (dummyImages.size() != request.getImageIds().size()) {
                 throw new CustomException(ErrorCode.BAD_REQUEST_IMAGE);
             }

@@ -50,6 +50,16 @@ public class BoardController {
         return ResponseEntity.ok(boardService.getSearchPosts(page, count, keyword));
     }
 
+    @GetMapping("/board/{boardId}")
+    public ResponseEntity<?> getPost(@PathVariable("boardId") final Long boardId) {
+        return ResponseEntity.ok(boardService.getPost(boardId));
+    }
+
+    @GetMapping("/board/{boardId}/update")
+    public ResponseEntity<?> getUpdatePost(@PathVariable("boardId") final Long boardId) {
+        return ResponseEntity.ok(boardService.getUpdatePost(1L, boardId));
+    }
+
     @PostMapping(value = "/board", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createBoard(@Valid @ModelAttribute final BoardDto.Request request) {
         Long boardId = boardService.create(1L, request);

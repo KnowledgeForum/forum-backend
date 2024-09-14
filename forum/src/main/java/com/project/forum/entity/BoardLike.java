@@ -25,7 +25,7 @@ public class BoardLike {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, columnDefinition = "INT UNSIGNED")
-    private AppUser appUser; //=> ON UPDATE CASCADE 이 옵션은 mysql에서 직접 설정하기
+    private AppUser user; //=> ON UPDATE CASCADE 이 옵션은 mysql에서 직접 설정하기
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)

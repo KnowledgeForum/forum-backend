@@ -26,7 +26,7 @@ public class BoardView {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, columnDefinition = "INT UNSIGNED")
-    private AppUser appUser; //=> ON UPDATE CASCADE 이 옵션은 mysql에서 직접 설정하기
+    private AppUser user; //=> ON UPDATE CASCADE 이 옵션은 mysql에서 직접 설정하기
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,6 +34,6 @@ public class BoardView {
     private Board board; //=> ON UPDATE CASCADE 이 옵션은 mysql에서 직접 설정하기
 
     @CreationTimestamp
-    @Column(name = "created_time", nullable = false)
+    @Column(name = "created_time", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdTime; //생성된 시간
 }
