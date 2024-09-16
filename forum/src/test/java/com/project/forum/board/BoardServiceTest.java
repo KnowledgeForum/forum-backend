@@ -1,10 +1,8 @@
 package com.project.forum.board;
 
+import com.project.forum.AbstractTest;
 import com.project.forum.dto.FileDto;
-import com.project.forum.dto.appuser.AppUserDto;
 import com.project.forum.dto.board.BoardDto;
-import com.project.forum.dto.tag.TagDto;
-import com.project.forum.entity.AppUser;
 import com.project.forum.entity.Board;
 import com.project.forum.entity.DummyImage;
 import com.project.forum.entity.Tag;
@@ -15,7 +13,6 @@ import com.project.forum.type.SortBoardTypeEnum;
 import com.project.forum.util.FileStore;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,17 +21,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @ExtendWith({ MockitoExtension.class })
-public class BoardServiceTest {
+public class BoardServiceTest extends AbstractTest {
     @Mock
     private FileStore fileStore;
     @Mock
@@ -51,63 +46,6 @@ public class BoardServiceTest {
     private BoardImageRepository boardImageRepository;
     @InjectMocks
     private BoardService boardService;
-    private MockMultipartFile mockMultipartFile;
-
-    private final AppUser appUser = new AppUser();
-    private final Tag tag = Tag.builder()
-            .tagName("tag")
-            .build();
-    private final DummyImage dummyImage = DummyImage.builder()
-            .imageSize(1024L)
-            .imageType("image/jpeg")
-            .imagePath("test.jpg")
-            .build();
-
-    private final Board board = new Board();
-
-    @BeforeEach
-    void setUp() {
-        byte[] imageContent = new byte[]{(byte)0xFF, (byte)0xD8, (byte)0xFF, (byte)0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01};
-        mockMultipartFile = new MockMultipartFile("thumbnail", "test.jpg", "image/jpeg", imageContent);
-
-        appUser.setUserId(1L);
-        appUser.setUserPw("encryptedPassword");
-        appUser.setEmail("appUser@example.com");
-        appUser.setProfilePath("/images/profile/appUser.jpg");
-        appUser.setProfileSize(2048L);
-        appUser.setProfileType("image/jpeg");
-        appUser.setNickname("appUser");
-        appUser.setDescription("This is a test user.");
-        appUser.setBoardCount(10L);
-        appUser.setNewsCount(5L);
-        appUser.setCommentCount(20L);
-        appUser.setLikeCount(50L);
-        appUser.setFollowerCount(100L);
-        appUser.setFollowingCount(150L);
-        appUser.setDisableFollow(false);
-        appUser.setPrivateAccount(false);
-        appUser.setNoticeNotification(true);
-        appUser.setCommentNotification(true);
-        appUser.setLikeNotification(true);
-        appUser.setRecommendNotification(true);
-        appUser.setFollowNotification(true);
-        appUser.setEventNotification(true);
-        appUser.setDeleted(false);
-        appUser.setDeletedTime(null);
-        appUser.setCreatedTime(LocalDateTime.now());
-
-        board.setBoardId(1L);
-        board.setCategory('N');
-        board.setTitle("title");
-        board.setContent("content");
-        board.setThumbnailPath("test.jpg");
-        board.setThumbnailSize(1024L);
-        board.setThumbnailType("image/jpeg");
-        board.setUploader(appUser);
-        board.setCreatedTime(LocalDateTime.now());
-
-        tag.setTagCount(0L);
-    }
 
     @Test
     @DisplayName("게시글 생성 실패 - 유저 없음")
@@ -126,9 +64,9 @@ public class BoardServiceTest {
     @DisplayName("게시글 생성 실패 - 태그 3개 초과")
     void createBoardFailedWithTag() {
         Mockito.when(appUserRepository.findByUserId(Mockito.anyLong()))
-                .thenReturn(Optional.of(appUser));
+                .thenReturn(Optional.of(super.getAppUser()));
         Mockito.when(tagRepository.findAllByTagIdIn(Mockito.anyList()))
-                .thenReturn(List.of(new Tag[]{ tag, tag, tag, tag }));
+                .thenReturn(List.of(new Tag[]{ super.getTag(), super.getTag(), super.getTag(), super.getTag() }));
 
         Assertions.assertThrows(CustomException.class, () -> {
             boardService.create(1L, new BoardDto.Request("N", "제목1", "내용1", List.of(1L), null, null));
@@ -143,11 +81,11 @@ public class BoardServiceTest {
     @Rollback
     void createBoardSuccess() {
         Mockito.when(appUserRepository.findByUserId(Mockito.anyLong()))
-                .thenReturn(Optional.of(appUser));
+                .thenReturn(Optional.of(super.getAppUser()));
         Mockito.when(boardRepository.save(Mockito.any()))
-                .thenReturn(board);
+                .thenReturn(super.getBoard());
         Mockito.when(tagRepository.findAllByTagIdIn(Mockito.anyList()))
-                .thenReturn(List.of(new Tag[]{ tag }));
+                .thenReturn(List.of(new Tag[]{ super.getTag() }));
         Mockito.when(boardTagRepository.saveAll(Mockito.any()))
                 .thenReturn(null);
 
@@ -174,15 +112,15 @@ public class BoardServiceTest {
                         .build()
                 );
         Mockito.when(appUserRepository.findByUserId(Mockito.anyLong()))
-                .thenReturn(Optional.of(appUser));
+                .thenReturn(Optional.of(super.getAppUser()));
         Mockito.when(boardRepository.save(Mockito.any()))
-                .thenReturn(board);
+                .thenReturn(super.getBoard());
         Mockito.when(tagRepository.findAllByTagIdIn(Mockito.anyList()))
-                .thenReturn(List.of(new Tag[]{ tag }));
+                .thenReturn(List.of(new Tag[]{ super.getTag() }));
         Mockito.when(boardTagRepository.saveAll(Mockito.any()))
                 .thenReturn(null);
 
-        Long boardId = boardService.create(1L, new BoardDto.Request("N", "제목1", "내용1", List.of(1L), mockMultipartFile, null));
+        Long boardId = boardService.create(1L, new BoardDto.Request("N", "제목1", "내용1", List.of(1L), super.getMockMultipartFile(), null));
         System.out.println("Board ID: " + boardId);
 
         Assertions.assertNotNull(boardId);
@@ -204,20 +142,20 @@ public class BoardServiceTest {
                         .build()
                 );
         Mockito.when(appUserRepository.findByUserId(Mockito.anyLong()))
-                .thenReturn(Optional.of(appUser));
+                .thenReturn(Optional.of(super.getAppUser()));
         Mockito.when(boardRepository.save(Mockito.any()))
-                .thenReturn(board);
+                .thenReturn(super.getBoard());
         Mockito.when(tagRepository.findAllByTagIdIn(Mockito.anyList()))
-                .thenReturn(List.of(new Tag[]{ tag }));
+                .thenReturn(List.of(new Tag[]{ super.getTag() }));
         Mockito.when(boardTagRepository.saveAll(Mockito.any()))
                 .thenReturn(null);
         Mockito.when(dummyImageRepository.findAllByImageIdIn(Mockito.anyList()))
-                .thenReturn(List.of(new DummyImage[]{ dummyImage }));
+                .thenReturn(List.of(new DummyImage[]{ super.getDummyImage() }));
         Mockito.when(boardImageRepository.saveAll(Mockito.any()))
                 .thenReturn(null);
         Mockito.doNothing().when(dummyImageRepository).deleteAllInBatch(Mockito.anyList());
 
-        Long boardId = boardService.create(1L, new BoardDto.Request("N", "제목1", "내용1", List.of(1L), mockMultipartFile, List.of(1L)));
+        Long boardId = boardService.create(1L, new BoardDto.Request("N", "제목1", "내용1", List.of(1L), super.getMockMultipartFile(), List.of(1L)));
         System.out.println("Board ID: " + boardId);
 
         Assertions.assertNotNull(boardId);
@@ -229,7 +167,7 @@ public class BoardServiceTest {
     @Test
     @DisplayName("게시글 가져오기 성공")
     void getBoardSuccess() {
-        List<Board> board = List.of(new Board[]{ this.board });
+        List<Board> board = List.of(new Board[]{ super.getBoard() });
         Pageable pageable = Pageable.ofSize(5).withPage(0);
         Page<Board> returnBoards = new PageImpl<>(board, pageable, board.size());
 
@@ -252,7 +190,7 @@ public class BoardServiceTest {
     @Test
     @DisplayName("게시글 검색 성공")
     void getBoardSearchSuccess() {
-        List<Board> board = List.of(new Board[]{ this.board });
+        List<Board> board = List.of(new Board[]{ super.getBoard() });
         Pageable pageable = Pageable.ofSize(5).withPage(0);
         Page<Board> returnBoards = new PageImpl<>(board, pageable, board.size());
 
@@ -310,7 +248,7 @@ public class BoardServiceTest {
     @DisplayName("게시글 수정 가져오기 성공")
     void getUpdatePostSuccess() {
         Mockito.when(boardRepository.findByBoardId(Mockito.anyLong()))
-                .thenReturn(Optional.of(board));
+                .thenReturn(Optional.of(super.getBoard()));
 
         BoardDto.Response.Update update = boardService.getUpdatePost(1L, 1L);
 
@@ -346,12 +284,7 @@ public class BoardServiceTest {
     @Test
     @DisplayName("게시글 상세 정보 가져오기 성공")
     void getPostDetail() {
-        board.setLikeCount(0);
-        board.setCommentCount(0);
-        board.setViewCount(0);
-        board.setIsLike(false);
-
-        Mockito.when(boardRepository.findBoardIncludeUploaderByBoardId(ArgumentMatchers.anyLong())).thenReturn(Optional.of(board));
+        Mockito.when(boardRepository.findBoardIncludeUploaderByBoardId(ArgumentMatchers.anyLong())).thenReturn(Optional.of(super.getBoard()));
 
         BoardDto.Response.Detail detail = boardService.getPost(1L);
 
