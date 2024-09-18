@@ -41,16 +41,15 @@ public class EmailConfig {
     @Value("${spring.mail.properties.mail.smtp.writetimeout}")
     private int writeTimeout;
 
+
     @Bean
     public JavaMailSender javaMailSender() {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
-
         javaMailSender.setHost(host);
+        javaMailSender.setPort(port);
         javaMailSender.setUsername(username);
         javaMailSender.setPassword(password);
-        javaMailSender.setPort(port);
         javaMailSender.setDefaultEncoding("UTF-8");
-
         javaMailSender.setJavaMailProperties(getMailProperties());
 
         return javaMailSender;
@@ -58,7 +57,7 @@ public class EmailConfig {
 
     private Properties getMailProperties() {
         Properties properties = new Properties();
-//        properties.setProperty("mail.transport.protocol", "smtp");
+        properties.setProperty("mail.transport.protocol", "smtp");
 //        properties.setProperty("mail.debug", "true");
         properties.put("mail.smtp.auth", auth);
         properties.put("mail.smtp.starttls.enable", starttlsEnable);

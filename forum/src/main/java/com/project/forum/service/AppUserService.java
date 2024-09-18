@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Member;
@@ -34,6 +35,8 @@ public class AppUserService {
 
     private final RedisService redisService;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
 
@@ -47,7 +50,7 @@ public class AppUserService {
     public boolean save(JoinAppUserDto joinAppUserDto){
         AppUser appUser = AppUser.builder()
                 .email(joinAppUserDto.getEmail())
-                .userPw(joinAppUserDto.getUserPw())
+                .userPw(passwordEncoder.encode(joinAppUserDto.getPassword()))
                 .nickname(joinAppUserDto.getNickname())
                 .noticeNotification(joinAppUserDto.isEnableNotification())
                 .commentNotification(joinAppUserDto.isEnableNotification())
@@ -55,6 +58,7 @@ public class AppUserService {
                 .recommendNotification(joinAppUserDto.isEnableNotification())
                 .followNotification(joinAppUserDto.isEnableNotification())
                 .eventNotification(joinAppUserDto.isEnableEvent())
+                .isVerified(joinAppUserDto.isVerified()) // 인증여부
                 .build();
 
         AppUser savedUser = appUserRepository.save(appUser);

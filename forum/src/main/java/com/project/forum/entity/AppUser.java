@@ -3,6 +3,8 @@ package com.project.forum.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +14,8 @@ import java.time.LocalDateTime;
 @Table(name = "app_user")
 @NoArgsConstructor
 @AllArgsConstructor
+@DynamicInsert
+@DynamicUpdate
 @ToString
 public class AppUser {
     @Id
@@ -91,4 +95,8 @@ public class AppUser {
     @CreationTimestamp
     @Column(name = "created_time", nullable = false)
     private LocalDateTime createdTime; //생성된 시간
+
+    @Column(name = "is_verified", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isVerified;
+
 }

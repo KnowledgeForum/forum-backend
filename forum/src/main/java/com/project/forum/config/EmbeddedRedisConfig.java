@@ -23,8 +23,8 @@ public class EmbeddedRedisConfig {
     @Value("${spring.redis.port}")
     private int redisPort;
 
-    @Value("${spring.redis.maxmemory}")
-    private String redisMaxMemory;
+//    @Value("${spring.redis.maxmemory}")
+//    private String redisMaxMemory;
 
     private RedisServer redisServer;
 
@@ -33,7 +33,7 @@ public class EmbeddedRedisConfig {
         int port = isRedisRunning() ? findAvailablePort() : redisPort;
         redisServer = RedisServer.builder()
                 .port(port)
-                .setting("maxmemory " + redisMaxMemory) // 메모리 지정
+                .setting("maxmemory 128M")
                 .build();
         redisServer.start();
     }

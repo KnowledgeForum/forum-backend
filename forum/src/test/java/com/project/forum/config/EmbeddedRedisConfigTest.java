@@ -16,7 +16,6 @@ class EmbeddedRedisConfigTest {
     final String KEY = "key";
     final String VALUE = "value";
     final Duration DURATION = Duration.ofMillis(5000);
-
     @Autowired
     private RedisService redisService;
 
@@ -29,7 +28,6 @@ class EmbeddedRedisConfigTest {
     void tearDown() {
         redisService.deleteValues(KEY);
     }
-
 
     @Test
     @DisplayName("Redis에 데이터를 저장하면 정상적으로 조회된다.")
