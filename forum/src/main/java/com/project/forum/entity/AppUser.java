@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @Table(name = "app_user")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
@@ -98,5 +98,14 @@ public class AppUser {
 
     @Column(name = "is_verified", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isVerified;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", length = 10, columnDefinition = "DEFAULT 'USER'")
+    private Role role;
+
+    @Column(name = "provider", length = 15)
+    private String provider; //일반회원, 구글, 카카오, 깃헙 등등..
+    @Column(name = "provider_id", length = 30)
+    private String providerId; //넘어올 때 주는 seq 같은거
 
 }
