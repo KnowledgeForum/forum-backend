@@ -2,35 +2,38 @@ package com.project.forum.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
-//@Setter
+@Setter
 @Entity
 @Table(name = "comment")
+@DynamicInsert
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id", unique = true, nullable = false, columnDefinition = "INT UNSIGNED AUTO_INCREMENT")
-    private Long commentId; //
+    private Long commentId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", columnDefinition = "INT UNSIGNED")
-    private AppUser parent;
+    private Comment parent;
 
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "uploader_id", nullable = false, columnDefinition = "INT UNSIGNED")
-    private AppUser uploader; // ON UPDATE CASCADE AND ON DELETE SET NULL 둘 다 설정 해줘야함
+    @JoinColumn(name = "uploader_id", columnDefinition = "INT UNSIGNED")
+    private AppUser uploader;
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false, columnDefinition = "INT UNSIGNED")
-    private Board board; //=> ON UPDATE CASCADE 이 옵션은 mysql에서 직접 설정하기
+    private Board board;
 
     @Lob
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
@@ -38,10 +41,9 @@ public class Comment {
 
     @CreationTimestamp
     @Column(name = "created_time", nullable = false, columnDefinition = "DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp createdTime; //생성된 시간
+    private LocalDateTime createdTime; //생성된 시간
 
     @CreationTimestamp
-    @Column(name = "update_time")
-    private Timestamp updateTime; //업데이트 시간
-
+    @Column(name = "updated_time", nullable = false, columnDefinition = "DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime updatedTime; //업데이트 시간
 }

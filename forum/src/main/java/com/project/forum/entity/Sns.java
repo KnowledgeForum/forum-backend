@@ -6,10 +6,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
-//@Setter
 @Entity
 @Table(name = "sns")
 public class Sns {
@@ -20,17 +19,19 @@ public class Sns {
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", unique = true, nullable = false, columnDefinition = "INT UNSIGNED")
-    private AppUser appUser; //=> ON UPDATE CASCADE 이 옵션은 mysql에서 직접 설정하기
+    @JoinColumn(name = "user_id", unique = true, nullable = false, columnDefinition = "INT UNSIGNED")
+    private AppUser appUser;
 
+    /**
+     * 1001 : 카카오톡
+     * 1002 : 네이버
+     * 1003 : 구글
+     * 1004 : 깃헙
+     */
     @Column(name = "sns_kind", nullable = false, columnDefinition = "CHAR", length = 4)
     private String snsKind;
-    // 1001 : 카카오톡
-    // 1002 : 네이버
-    // 1003 : 구글
-    // 1004 : 깃헙
 
     @CreationTimestamp
-    @Column(name = "created_time", nullable = false)
-    private Timestamp createdTime; //생성된 시간
+    @Column(name = "created_time", nullable = false, columnDefinition = "DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime createdTime; //생성된 시간
 }
