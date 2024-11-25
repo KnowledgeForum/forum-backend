@@ -1,14 +1,21 @@
 package com.project.forum.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "tag")
+@DynamicInsert
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,5 +30,10 @@ public class Tag {
 
     @CreationTimestamp
     @Column(name = "created_time", nullable = false, columnDefinition = "DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createTime; //유효시간 => 5분 이내로 계산
+    private LocalDateTime createTime;
+
+    @Builder
+    public Tag(String tagName) {
+        this.tagName = tagName;
+    }
 }
